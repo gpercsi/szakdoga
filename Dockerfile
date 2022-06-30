@@ -10,7 +10,10 @@ RUN mkdir p /etc/emqx && cd /etc/emqx
 RUN wget 'https://github.com/emqx/emqx/releases/download/v4.4.4/emqx-4.4.4-otp24.1.5-3-ubuntu20.04-amd64.deb'
 RUN apt update
 RUN apt-get install -f ./emqx-4.4.4-otp24.1.5-3-ubuntu20.04-amd64.deb
+RUN echo "#!/bin/bash" > /run/start.sh
+RUN echo "emqx start" >> /run/start.sh
+RUN echo "sleep infinity" >> /run/start.sh
 
 EXPOSE 1883 8081 8083 8883 8084 18083
 
-CMD ["emqx", "start"]
+CMD ["bash", "/run/start.sh"]
