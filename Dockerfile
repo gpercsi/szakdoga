@@ -1,4 +1,8 @@
 FROM ubuntu:20.04
+
+ENV IPADDRESS = 127.0.0.1
+ENV ID = 0
+
 RUN echo "root:admin1234" | chpasswd
 RUN apt-get update -y;\
         apt-get install -y\
