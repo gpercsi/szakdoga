@@ -1,0 +1,36 @@
+- name: EMQX containers for cluster
+  hosts: localhost
+  tasks:
+    - name: Create network
+      docker_network:
+        name: ContainerNetwork
+        driver_options:
+          com.docker.network.bridge.name: network1
+        ipam_config:
+          - subnet: '172.20.1.0/16'
+            gateway: '172.20.1.1'
+            iprange: '192.168.2.0/24'
+    - name: Create -> EMQX - Worker - 1
+      docker_container:
+        name: "EMQX_W_1"
+        memory: "1g"
+        image: "testimage:latest"
+        env:
+            ID: "1"
+            IPADDRESS: "172.20.1.2"
+        networks:
+        - name: "ContainerNetwork"
+          ipv4_address: "172.20.1.2"
+        state: started
+    - name: Create -> EMQX - Worker - 2
+      docker_container:
+        name: "EMQX_W_2"
+        memory: "1g"
+        image: "testimage:latest"
+        env:
+            ID: "2"
+            IPADDRESS: "172.20.1.3"
+        networks:
+        - name: "ContainerNetwork"
+          ipv4_address: "172.20.1.3"
+        state: started
