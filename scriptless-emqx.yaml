@@ -1,0 +1,98 @@
+- name: EMQX containers for cluster
+  hosts: localhost
+  tasks:
+    - name: Create network
+      docker_network:
+        name: ContainerNetwork
+        driver_options:
+          com.docker.network.bridge.name: network1
+        ipam_config:
+          - subnet: '172.20.1.0/16'
+            gateway: '172.20.1.1'
+            iprange: '192.168.2.0/24'
+    - name: Create -> EMQX - Worker - 1
+      docker_container:
+        name: "EMQX_W_1"
+        memory: "1g"
+        image: "testimage:latest"
+        env:
+            ID: "1"
+            IPADDRESS: "172.20.1.2"
+            mainIP: "172.20.1.2"
+        networks:
+        - name: "ContainerNetwork"
+          ipv4_address: "172.20.1.2"
+        state: started
+    - name: EMQX Start at Worker1
+      community.docker.docker_container_exec:
+        container: EMQX_W_1
+        command: /bin/bash -c "emqx start"
+        chdir: /root
+    - name: EMQX Config change at Worker1
+      community.docker.docker_container_exec:
+        container: EMQX_W_1
+        command: /bin/bash -c "sed -i 's/node.name = emqx@127.0.0.1/node.name = emqx'$ID'@'$IPADDRESS'/g' /etc/emqx/emqx.conf"
+        chdir: /root
+    - name: Setting up EMQX cookie
+      community.docker.docker_container_exec:
+        container: EMQX_W_1
+        command: /bin/bash -c "sed -i 's/node.cookie = emqxsecretcookie/node.cookie = sztakicluster/g' /etc/emqx/emqx.conf"
+        chdir: /root
+    - name: Stop EMQX node
+      community.docker.docker_container_exec:
+        container: EMQX_W_1
+        command: /bin/bash -c "emqx stop"
+        chdir: /root
+    - name: Start EMQX node
+      community.docker.docker_container_exec:
+        container: EMQX_W_1
+        command: /bin/bash -c "emqx start"
+        chdir: /root
+    #- name: Cluster joining
+    #  community.docker.docker_container_exec:
+    #    container: EMQX_W_1
+    #    command: ./bin/emqx_ctl cluter join 172.20.1.2
+    #  register: result
+    - name: Create -> EMQX - Worker - 2
+      docker_container:
+        name: "EMQX_W_2"
+        memory: "1g"
+        image: "testimage:latest"
+        env:
+            ID: "2"
+            IPADDRESS: "172.20.1.3"
+            mainIP: "172.20.1.2"
+        networks:
+        - name: "ContainerNetwork"
+          ipv4_address: "172.20.1.3"
+        state: started
+    - name: EMQX Start at Worker1
+      community.docker.docker_container_exec:
+        container: EMQX_W_2
+        command: /bin/bash -c "emqx start"
+        chdir: /root
+    - name: EMQX Config change at Worker1
+      community.docker.docker_container_exec:
+        container: EMQX_W_2
+        command: /bin/bash -c "sed -i 's/node.name = emqx@127.0.0.1/node.name = emqx'$ID'@'$IPADDRESS'/g' /etc/emqx/emqx.conf"
+        chdir: /root
+    - name: Setting up EMQX cookie
+      community.docker.docker_container_exec:
+        container: EMQX_W_2
+        command: /bin/bash -c "sed -i 's/node.cookie = emqxsecretcookie/node.cookie = sztakicluster/g' /etc/emqx/emqx.conf"
+        chdir: /root
+    - name: Stop EMQX node
+      community.docker.docker_container_exec:
+        container: EMQX_W_2
+        command: /bin/bash -c "emqx stop"
+        chdir: /root
+    - name: Start EMQX node
+      community.docker.docker_container_exec:
+        container: EMQX_W_2
+        command: /bin/bash -c "emqx start"
+        chdir: /root
+    - name: Cluster joining II
+      community.docker.docker_container_exec:
+        container: EMQX_W_2
+        command: ./bin/emqx_ctl cluster join emqx1@172.20.1.2
+      register: result
