@@ -21,5 +21,5 @@ EXPOSE 8080 1883 4369 4370 6379 8081 8083 8883 8084 18083
 
 COPY start.sh /
 
-#ENTRYPOINT ["/start.sh"]
-CMD ["sleep", "infinity"]
+ENTRYPOINT ["/start.sh"]
+#CMD ["sleep", "infinity"]
