@@ -10,5 +10,10 @@ echo "EMQX restart"
 emqx stop
 sleep 20
 emqx start
+sleep 30
+if [ "$WORKER" = true ]
+then
+  emqx_ctl cluster join emqx@'$masterIP'
+fi
 echo "Sleep infinity"
 sleep infinity

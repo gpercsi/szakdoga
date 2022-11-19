@@ -4,7 +4,8 @@ ENV IPADDRESS = 127.0.0.1
 ENV ID = 0
 ENV EMQX_NAME = emqx
 ENV EMQX_HOST = 127.0.0.1
- 
+ENV masterIP = 127.0.0.1
+ENV WORKER = false 
 RUN echo "root:admin1234" | chpasswd
 RUN apt-get update -y;\
         apt-get install -y\
