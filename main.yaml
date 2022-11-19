@@ -1,0 +1,31 @@
+- name: EMQX containers for cluster
+  hosts: all
+  tasks:
+    - name: Create -> EMQX - Master
+      docker_container:
+        name: "EMQX_NODE"
+        memory: "1g"
+        network_mode: "host"
+        image: quay.io/pgergely/emqx-cluster
+        env:
+          IPADDRESS: "{{ IPADDRESS }}"
+          EMQX_NAME: "emqx"
+          EMQX_HOST: "{{ IPADDRESS}}"
+          EMQX_CLUSTER_DISCOVERY: "manual"
+          WORKER: "{{ WORKER }}"
+          masterIP: "{{ masterIP}}"
+        state: started
+
+    - name: Pause for 45 sec to build app cache
+      ansible.builtin.pause:
+        seconds: 45
+    - name: EMQX Start verify
+      community.docker.docker_container_exec:
+        container: EMQX_NODE
+        command: /bin/bash -l -c "emqx ping"
+        chdir: /root
+    - name: EMQX Config verification
+      community.docker.docker_container_exec:
+        container: EMQX_NODE
+        command: /bin/bash -c -l "cat /etc/emqx/emqx.conf | grep 'node.name'"
+        chdir: /root
