@@ -17,4 +17,7 @@ RUN mkdir p /etc/emqx;\
         apt-get install -f /etc/emqx/emqx-4.4.4-otp24.1.5-3-ubuntu20.04-amd64.deb
 EXPOSE 1883 4369 4370 8081 8083 8883 8084 18083
 
-CMD ["sleep", "infinity"]
+COPY start.sh /
+
+ENTRYPOINT ["/start.sh"]
+#CMD ["sleep", "infinity"]
