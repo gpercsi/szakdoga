@@ -13,7 +13,7 @@ emqx start
 sleep 30
 if [ "$WORKER" = true ]
 then
-  emqx_ctl cluster join emqx@'$masterIP'
+  emqx_ctl cluster join emqx@"$masterIP"
 fi
 echo "Sleep infinity"
 sleep infinity
