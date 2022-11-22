@@ -191,6 +191,8 @@ provisioner "local-exec" {
                 --extra-vars \
                 'IPADDRESS=${openstack_compute_instance_v2.basic[0].access_ip_v4} \
                  WORKER="false"\
+		 USERNAME="admin"\
+		 PASSWORD="tesztpassword"\
                  masterIP=${openstack_compute_instance_v2.basic[0].access_ip_v4}'
     EOF
   }
@@ -212,8 +214,10 @@ provisioner "local-exec" {
                 ansible-playbook -u ubuntu -i '${openstack_compute_instance_v2.basic[1].access_ip_v4},' main.yaml \
                 --extra-vars \
                 'IPADDRESS=${openstack_compute_instance_v2.basic[1].access_ip_v4} \
-                masterIP=${openstack_compute_instance_v2.basic[0].access_ip_v4} \
-                WORKER="true"' \
+                WORKER="true"\
+		USERNAME="admin"\
+		PASSWORD="tesztpassword"\
+		masterIP=${openstack_compute_instance_v2.basic[0].access_ip_v4}'
                 --ssh-common-args '-o ProxyCommand="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p \
                 ubuntu@${openstack_compute_floatingip_associate_v2.fip_1.floating_ip}"'
     EOF
@@ -232,9 +236,11 @@ provisioner "local-exec" {
                 ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_SSH_RETRIES=10 \
                 ansible-playbook -u ubuntu -i '${openstack_compute_instance_v2.basic[2].access_ip_v4},' main.yaml \
                 --extra-vars \
-                'IPADDRESS=${openstack_compute_instance_v2.basic[2].access_ip_v4} \
-                masterIP=${openstack_compute_instance_v2.basic[0].access_ip_v4} \
-                WORKER="true"' \
+               'IPADDRESS=${openstack_compute_instance_v2.basic[1].access_ip_v4} \
+                WORKER="true"\
+		USERNAME="admin"\
+		PASSWORD="tesztpassword"\
+		masterIP=${openstack_compute_instance_v2.basic[0].access_ip_v4}'
                 --ssh-common-args '-o ProxyCommand="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p \
                 ubuntu@${openstack_compute_floatingip_associate_v2.fip_1.floating_ip}"'
     EOF
