@@ -15,6 +15,7 @@ RUN apt-get update -y;\
         python3\
         net-tools\
         nano\
+        vi \
         wget
 RUN mkdir p /etc/emqx;\
         cd /etc/emqx;\
